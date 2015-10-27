@@ -12,6 +12,7 @@ if (config.ws.secured) { // HTTPS
         cert: fs.readFileSync('server.crt', 'utf8')
     };
     var securePort = config.ws.securePort;
+
     server = https.createServer(options, app).listen(securePort, function (err) {
         console.log('[+] Set [https] protocol and server running at port #' + securePort);
     });
@@ -36,5 +37,8 @@ app.get('/js/screen.js', function(req, res) {
     res.sendFile(__dirname + '/js/screen.js');
 });
 
+app.get('/js/opentok.min.js', function(req, res) {
+    res.sendFile(__dirname + '/js/opentok.min.js');
+});
 
 app.use(express.static('.'));
