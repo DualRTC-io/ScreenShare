@@ -2,8 +2,8 @@
 var ws = {};
 module.exports.ws = ws;
 ws.port = 3000;
-ws.securePort = 443;
-ws.secured = false;
+ws.securePort = 8080;
+ws.secured = true;
 
 // Database
 var db = {};

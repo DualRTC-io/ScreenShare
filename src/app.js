@@ -8,8 +8,8 @@ var server;
 if (config.ws.secured) { // HTTPS
     var https = require('https');
     var options = {
-        key: fs.readFileSync('server.key', 'utf8'),
-        cert: fs.readFileSync('server.crt', 'utf8')
+        key: fs.readFileSync('./key/dualrtc-key.pem', 'utf8'),
+        cert: fs.readFileSync('./key/dualrtc-cert.pem', 'utf8')
     };
     var securePort = config.ws.securePort;
 
@@ -39,6 +39,10 @@ app.get('/js/screen.js', function(req, res) {
 
 app.get('/js/opentok.min.js', function(req, res) {
     res.sendFile(__dirname + '/js/opentok.min.js');
+});
+
+app.get('/js/jquery-2.1.4.min.js', function(req, res) {
+    res.sendFile(__dirname + '/js/jquery-2.1.4.min.js');
 });
 
 app.use(express.static('.'));
