@@ -1,7 +1,7 @@
 // Web server
 var ws = {};
 module.exports.ws = ws;
-ws.port = 80;
+ws.port = 3000;
 ws.securePort = 443;
 ws.secured = false;
 
