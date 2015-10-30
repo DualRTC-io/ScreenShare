@@ -2,14 +2,13 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var config = require('./js/config');
-var io;
 var server;
 
 if (config.ws.secured) { // HTTPS
     var https = require('https');
     var options = {
-        key: fs.readFileSync('./key/dualrtc-key.pem', 'utf8'),
-        cert: fs.readFileSync('./key/dualrtc-cert.pem', 'utf8')
+        key: fs.readFileSync('./key/key.pem', 'utf8'),
+        cert: fs.readFileSync('./key/cert.pem', 'utf8')
     };
     var securePort = config.ws.securePort;
 
