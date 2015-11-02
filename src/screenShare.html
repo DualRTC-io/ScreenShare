@@ -1,52 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>dualrtc.io</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>dualrtc.io</title>
 
-    <!-- scripts used for screen-sharing -->
-    <script type="text/javascript" src="screenShare/firebase.js"></script>
-    <script type="text/javascript" src="screenShare/conference.js"></script>
+        <script type="text/javascript" src="screenShare/firebase.js"></script>
+        <script type="text/javascript" src="screenShare/conference.js"></script>
+    </head>
+    <body>
+        <button id="share-screen" disabled>Share Screen</button>
+    </body>
+
     <script type="text/javascript" src="screenShare/screenShare.js"></script>
     <script type="text/javascript" src="screenShare/detectrtc.js"></script>
-</head>
-
-<body>
-
-<article>
-
-    <!-- just copy this <section> and next script -->
-    <section class="experiment">
-        <!-- list of all available broadcasting rooms -->
-        <table style="width: 100%;" id="rooms-list"></table>
-
-        <!-- local/remote videos container -->
-        <div id="videos-container"></div>
-    </section>
-
-    <section class="experiment">
-        <h2 id="why-screen-fails">
-            <a href="#why-screen-fails">Why Screen Sharing Fails?</a>
-        </h2>
-        <ol>
-            <li>
-                You've not used '<strong>chromeMediaSource</strong>' or '<strong>mediaSource</strong>' constraint:
-                <pre>
-                    // for chrome
-                    mandatory: {chromeMediaSource: 'screen'}
-                    // or desktop-Capturing
-                    mandatory: {chromeMediaSource: 'desktop'}
-
-                    // for Firefox
-                    video: {
-                        mediaSource: 'window' || 'screen'
-                    }
-                </pre>
-            </li>
-        </ol>
-    </section>
-
-</article>
-
-</body>
 </html>
