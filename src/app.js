@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var config = require('./js/config');
+var io = require('socket.io');
 var server;
 
 if (config.ws.secured) { // HTTPS
@@ -22,6 +23,49 @@ if (config.ws.secured) { // HTTPS
         console.log('[+] Set [http] protocol and server running at port #' + port);
     });
 }
+
+io.listen(server);
+
+var usernames = {};
+var numUsers = 0;
+
+io.on('connection', function (socket) {
+    var addedUser = false;
+
+    // when the client emits 'add user', this listens and executes
+    socket.on('add user', function (username) {
+        // we store the username in the socket session for this client
+        socket.username = username;
+        // add the client's username to the global list
+        usernames[username] = username;
+        ++numUsers;
+        addedUser = true;
+        socket.emit('login', {
+            numUsers: numUsers
+        });
+        // echo globally (all clients) that a person has connected
+        socket.broadcast.emit('user joined', {
+            username: socket.username,
+            numUsers: numUsers
+        });
+    });
+
+    // when the user disconnects.. perform this
+    socket.on('disconnect', function () {
+        // remove the username from global usernames list
+        if (addedUser) {
+            delete usernames[socket.username];
+            --numUsers;
+
+            // echo globally that this client has left
+            socket.broadcast.emit('user left', {
+                username: socket.username,
+                numUsers: numUsers
+            });
+        }
+    });
+});
+
 
 // Handle resource request by server
 app.get('/', function(req, res) {
