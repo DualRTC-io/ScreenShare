@@ -1,6 +1,5 @@
 var config = {
     openSocket: function(config) {
-        var channel = config.channel || 'screen-capturing-' + location.href.replace( /\/|:|#|%|\.|\[|\]/g , '');
         var socket = new Firebase('https://webrtc.firebaseIO.com/' + channel);
         socket.channel = channel;
         socket.on("child_added", function(data) {
@@ -16,37 +15,7 @@ var config = {
     onRemoteStream: function(media) {
         var video = media.video;
         video.setAttribute('controls', true);
-        videosContainer.insertBefore(video, videosContainer.firstChild);
         video.play();
-        rotateVideo(video);
-    },
-    onRoomFound: function(room) {
-        if(location.hash.replace('#', '').length) {
-            // private rooms should auto be joined.
-            conferenceUI.joinRoom({
-                roomToken: room.roomToken,
-                joinUser: room.broadcaster
-            });
-            return;
-        }
-
-        var alreadyExist = document.getElementById(room.broadcaster);
-        if (alreadyExist) return;
-        if (typeof roomsList === 'undefined') roomsList = document.body;
-        var tr = document.createElement('tr');
-        tr.setAttribute('id', room.broadcaster);
-        tr.innerHTML = '<td>' + room.roomName + '</td>' +
-            '<td><button class="join" id="' + room.roomToken + '">Open Screen</button></td>';
-        roomsList.insertBefore(tr, roomsList.firstChild);
-        var button = tr.querySelector('.join');
-        button.onclick = function() {
-            var button = this;
-            button.disabled = true;
-            conferenceUI.joinRoom({
-                roomToken: button.id,
-                joinUser: button.parentNode.parentNode.id
-            });
-        };
     },
     onNewParticipant: function(numberOfParticipants) {
         document.title = numberOfParticipants + ' users are viewing your screen!';
@@ -65,6 +34,11 @@ var config = {
         }
     }
 };
+
+
+
+
+
 
 
 function captureUserMedia(callback, extensionAvailable) {
@@ -151,8 +125,8 @@ function captureUserMedia(callback, extensionAvailable) {
     var video = document.createElement('video');
     video.setAttribute('autoplay', true);
     video.setAttribute('controls', true);
-    videosContainer.insertBefore(video, videosContainer.firstChild);
 
+    // getUserMedia 함수 호출
     getUserMedia({
         video: video,
         constraints: constraints,
@@ -160,7 +134,6 @@ function captureUserMedia(callback, extensionAvailable) {
             config.attachStream = stream;
             callback && callback();
             video.setAttribute('muted', true);
-            rotateVideo(video);
         },
         onerror: function() {
             if (isChrome && location.protocol === 'http:') {
@@ -175,35 +148,20 @@ function captureUserMedia(callback, extensionAvailable) {
     });
 }
 
+
+
+
+
 /* on page load: get public rooms */
 var conferenceUI = conference(config);
 
 /* UI specific */
-var videosContainer = document.getElementById("videos-container") || document.body;
-var roomsList = document.getElementById('rooms-list');
 document.getElementById('share-screen').onclick = function() {
-    var roomName = document.getElementById('room-name') || { };
-    roomName.disabled = true;
     captureUserMedia(function() {
-        conferenceUI.createRoom({
-            roomName: (roomName.value || 'Anonymous') + ' shared his screen with you'
-        });
+        conferenceUI.createRoom({});
     });
     this.disabled = true;
 };
-function rotateVideo(video) {
-    video.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
-    setTimeout(function() {
-        video.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(360deg)';
-    }, 1000);
-}
-(function() {
-    var uniqueToken = document.getElementById('unique-token');
-    if (uniqueToken)
-        if (location.hash.length > 2)
-            uniqueToken.parentNode.parentNode.parentNode.innerHTML = '<h2 style="text-align:center;"><a href="' + location.href + '" target="_blank">Share this link</a></h2>';
-        else
-            uniqueToken.innerHTML = uniqueToken.parentNode.parentNode.href = '#' + (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace( /\./g , '-');
-})();
+
 
 var Firefox_Screen_Capturing_Warning = 'Make sure that you are using Firefox Nightly and you enabled: media.getusermedia.screensharing.enabled flag from about:config page. You also need to add your domain in "media.getusermedia.screensharing.allowed_domains" flag.';
