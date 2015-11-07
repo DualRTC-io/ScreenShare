@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>dualrtc.io</title>
+
+    <link rel="stylesheet" href="//cdn.webrtc-experiment.com/style.css">
+
+    <style>
+        video {
+            -moz-transition: all 1s ease;
+            -ms-transition: all 1s ease;
+
+            -o-transition: all 1s ease;
+            -webkit-transition: all 1s ease;
+            transition: all 1s ease;
+            vertical-align: top;
+            width: 100%;
+        }
+        input {
+            border: 1px solid #d9d9d9;
+            border-radius: 1px;
+            font-size: 2em;
+            margin: .2em;
+            width: 30%;
+        }
+        select {
+            border: 1px solid #d9d9d9;
+            border-radius: 1px;
+            height: 50px;
+            margin-left: 1em;
+            margin-right: -12px;
+            padding: 1.1em;
+            vertical-align: 6px;
+            width: 18%;
+        }
+        .setup {
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
+            font-size: 102%;
+            height: 47px;
+            margin-left: -9px;
+            margin-top: 8px;
+            position: absolute;
+        }
+        p { padding: 1em; }
+        li {
+            border-bottom: 1px solid rgb(189, 189, 189);
+            border-left: 1px solid rgb(189, 189, 189);
+            padding: .5em;
+        }
+    </style>
+    <script>
+        document.createElement('article');
+        document.createElement('footer');
+    </script>
+
+    <!-- scripts used for screen-sharing -->
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="dualrtc/firebase.js"></script>
+    <script type="text/javascript" src="dualrtc/dualrtc.js"></script>
+    <script type="text/javascript" src="dualrtc/adapter.js"></script>
+</head>
+
+<body>
+<article>
+
+    <h2 id="number-of-participants" style="display: block;text-align: center;border:0;margin-bottom:0;">Its a full-HD (1080p) screen sharing application using WebRTC!</h2>
+    <!-- just copy this <section> and next script -->
+    <section class="experiment">
+        <section>
+                    <span>
+                        Private ?? <a href="/Pluginfree-Screen-Sharing/" target="_blank" title="Open this link for private screen sharing!"><code><strong id="unique-token">#123456789</strong></code></a>
+                    </span>
+            <input type="text" id="room-name" placeholder="Your Name" disabled>
+            <button id="share-screen" class="setup" disabled>Share Your Screen</button>
+        </section>
+
+        <!-- list of all available broadcasting rooms -->
+        <table style="width: 100%;" id="rooms-list"></table>
+
+        <!-- local/remote videos container -->
+        <div id="videos-container"></div>
+    </section>
+
+    <script>
+        var isWebRTCExperimentsDomain = document.domain.indexOf('webrtc-experiment.com') != -1;
+        var screenFrame, loadedScreenFrame;
+
+        function loadScreenFrame(skip) {
+            if(loadedScreenFrame) return;
+            if(!skip) return loadScreenFrame(true);
+            loadedScreenFrame = true;
+            var iframe = document.createElement('iframe');
+            iframe.onload = function () {
+                iframe.isLoaded = true;
+                console.log('Screen Capturing frame is loaded.');
+
+                document.getElementById('share-screen').disabled = false;
+                document.getElementById('room-name').disabled = false;
+            };
+            iframe.src = 'https://www.webrtc-experiment.com/getSourceId/';
+            iframe.style.display = 'none';
+            (document.body || document.documentElement).appendChild(iframe);
+            screenFrame = {
+                postMessage: function () {
+                    if (!iframe.isLoaded) {
+                        setTimeout(screenFrame.postMessage, 100);
+                        return;
+                    }
+                    console.log('Asking iframe for sourceId.');
+                    iframe.contentWindow.postMessage({
+                        captureSourceId: true
+                    }, '*');
+                }
+            };
+        };
+
+        if(!isWebRTCExperimentsDomain) {
+            loadScreenFrame();
+        }
+        else {
+            document.getElementById('share-screen').disabled = false;
+            document.getElementById('room-name').disabled = false;
+        }
+    </script>
+
+
+    <script type="text/javascript" src="dualrtc/screenShare.js"></script>
+    <script type="text/javascript" src="dualrtc/detectrtc.js"></script>
+</article>
+</body>
+</html>
